@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500&display=swap" rel="stylesheet">
+    <title>Register Form</title>
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #f1f1f1;
+            display: flex;
+            align-items: center;
+            width: 100vw;
+            height: 100vh;
+            justify-content: center;
+        }
+
+        .register-container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .register-container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .register-form input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .register-form button {
+            width: 100%;
+            padding: 10px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .register-form button:hover {
+            background-color: #333;
+        }
+
+        @media screen and (max-width: 500px) {
+            .register-container {
+                max-width: 90%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="register-container">
+        <h2>Register</h2>
+        <form class="register-form" id="form">
+            <input type="text" placeholder="Full Name" name="name" required id="name">
+            <input type="email" placeholder="Email Address" name="email" required id="email">
+            <input type="password" placeholder="Password" name="password" required id="password">
+            <button type="submit">Register</button>
+        </form>
+    </div>
+
+    <script>
+
+        const form = document.getElementById("form");
+
+        form.addEventListener("submit", async (e)=>
+        {
+            e.preventDefault();
+            const name = document.getElementById("name");
+            const email = document.getElementById("email");
+            const password = document.getElementById("password");
+
+            if(password.value.length < 7)
+            {
+                alert("Password must contain 8 digits")
+                return;
+            }
+            
+            const data = {
+                name:name.value,
+                email:email.value,
+                password:password.value
+            }
+            const response = await fetch("http://localhost:8000/register", {
+                method: "POST",
+                mode: "cors",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            });
+
+            const resp = await response.json();
+            alert(resp.msg)
+        })
+
+    </script>
+</body>
+
+</html>
