@@ -1,0 +1,222 @@
+<style>
+    body {
+        font-family: 'Quicksand', sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+
+    nav {
+        padding: .5rem 2rem;
+        font-size: 1.5rem;
+        background: #dadada;
+    }
+
+    .middle {
+        display: flex;
+        min-height: 90vh;
+        padding-top: 2rem;
+    }
+
+    #middle-left {
+        width: 60%;
+        padding: 0rem 2rem;
+    }
+
+    #middle-right {
+        width: 40%;
+        padding: 0rem 2rem;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    #fileInput {
+        margin-top: 0.5rem;
+    }
+
+    #middle-right #input {
+        width: 80%;
+        padding: 1rem;
+        font-size: 2rem;
+    }
+
+    #middle-right button {
+        width: 80%;
+        border: none;
+        padding: 0.6rem;
+        background: #dadada;
+        margin-top: 1rem;
+        border-radius: 10px;
+    }
+
+
+    .perElement {
+        margin: 10px 3px;
+        display: flex;
+        justify-content: space-between;
+        padding: 3px 10px;
+        box-shadow: 1px 2px 7px grey;
+        align-items: center;
+    }
+
+    .secondDiv {
+        width: 15%;
+        display: flex;
+        align-items: center;
+        height: 100%;
+        justify-content: space-between;
+    }
+
+    @media screen and (max-width:1000px) {
+        .secondDiv {
+            width: 30%;
+        }
+    }
+
+    @media screen and (max-width:600px) {
+        .perElement {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+
+    @media screen and (max-width:500px) {
+        .middle {
+            flex-direction: column-reverse;
+        }
+
+        #middle-left {
+            width: 90%;
+            margin-bottom: 2rem;
+        }
+
+        #middle-right {
+            width: 90%;
+            margin-bottom: 2rem;
+        }
+    }
+</style>
+
+<div class="middle">
+    <div id="middle-left">
+        <h2>Task List</h2>
+        <p>Add task to your list by typing to the right and pressing enter. You may then view pending tasks below.
+        </p>
+        <div id="list">
+        </div>
+    </div>
+    <form action="/addTodo" method="POST" enctype="multipart/form-data" id="middle-right">
+        <input required type="text" placeholder="Enter data" id="input" name="title"></input>
+        <input type="file" id="fileInput" name="pic"></input>
+        <button id="btn">Submit</button>
+    </form>
+</div>
+
+<script>
+
+    const input = document.getElementById("input")
+    const fileInput = document.getElementById("fileInput");
+    const btn = document.getElementById("btn")
+    const form = document.getElementById("middle-right");
+
+    
+    const name = "<%= username %>"
+    const useremail = "<%= useremail %>"
+    
+    
+    async function callGet(val) {
+
+        fetch("http://localhost:8000/todos?useremail=" + val).
+            then(response => {
+                if (response.status !== 200)
+                    throw new Error("Something went wrong")
+                return response.json()
+            }).
+            then(todos => {
+                const { data } = todos;
+                const todoList = document.getElementById("list")
+                todoList.textContent = "";
+                data.forEach(element => {
+                    const newTodoelement = document.createElement("div");
+                    newTodoelement.classList.add("perElement");
+                    const pTag = document.createElement("p");
+                    const checkBox = document.createElement("input");
+                    checkBox.setAttribute('type', 'checkbox');
+                    checkBox.addEventListener('click', () => {
+                        markTodo(element);
+                    })
+                    const button = document.createElement("button");
+                    button.addEventListener('click', () => {
+                        deleteTodo(element);
+                    })
+                    button.innerText = "Delete"
+                    const firstDiv = document.createElement("div");
+                    const secondDiv = document.createElement("div");
+                    const image = document.createElement("img") 
+                    image.src=element.image;
+                    secondDiv.classList.add('secondDiv');
+                    pTag.innerText = element.title
+
+                    if (element.isDone) {
+                        pTag.style.textDecoration = "line-through"
+                        checkBox.checked = true
+                    }
+                    firstDiv.appendChild(pTag);
+                    firstDiv.appendChild(image);
+                    firstDiv.style.width = "80%";
+                    firstDiv.style.display = "flex";
+                    firstDiv.style.alignItems = "center";
+                    firstDiv.style.justifyContent = "space-between"
+                    image.style.width = "30%";
+                    image.style.objectFit = "cover"
+                    secondDiv.appendChild(checkBox);
+                    secondDiv.appendChild(button);
+                    newTodoelement.appendChild(firstDiv);
+                    newTodoelement.appendChild(secondDiv);
+                    todoList.appendChild(newTodoelement);
+                });
+            }).catch(err)
+        {
+            alert(err)
+        }
+    }
+
+
+    async function markTodo(val) {
+        await fetch("http://localhost:8000/markTodo", {
+            method: "POST",
+            mode: "cors",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(val),
+        }).then((res) => {
+            return res.json();
+        }).then((res) => {
+            alert(res.msg)
+            callGet(useremail)
+        }).catch((err) => {
+            alert(err)
+        })
+    }
+
+    async function deleteTodo(val) {
+        await fetch("http://localhost:8000/", {
+            method: "DELETE",
+            mode: "cors",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(val),
+        }).then((res) => {
+            return res.json();
+        }).then((res) => {
+            alert(res.msg)
+            callGet(useremail)
+        }).catch((err) => {
+            alert(err)
+        })
+    }
+
+    callGet(useremail);
+</script>

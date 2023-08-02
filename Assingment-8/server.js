@@ -160,7 +160,7 @@ app.post("/register", function (req, res) {
             let todos = JSON.parse(data);
             todos.map((val) => {
                 if (val.email === email)
-                    res.status(200).redirect('/login')
+                    return res.status(200).redirect('/login')
             })
             todos.push({ "name": name, "email": email, "password": password });
             fs.writeFile("./userDetail.mp4", JSON.stringify(todos), function (error) {
