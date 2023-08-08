@@ -1,0 +1,168 @@
+<style>
+    body {
+        font-family: 'Quicksand', sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+
+    nav {
+        padding: .5rem 2rem;
+        font-size: 1.5rem;
+        background: #dadada;
+    }
+
+    .allProducts {
+        width: 100vw;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .perElement {
+        width: 90%;
+        margin: 10px 3px;
+        padding: 3px 10px;
+        box-shadow: 1px 2px 7px grey;
+    }
+
+    .mainDiv {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .firstDiv {
+        width: 40%;
+    }
+
+    .firstDiv>img {
+        width: 50%;
+        object-fit: cover;
+    }
+
+    .secondDiv {
+        width: 60%;
+        display: flex;
+        align-items: center;
+        height: 100%;
+        justify-content: flex-end;
+    }
+
+    .secondDiv>p {
+        font-weight: 600;
+        font-weight: 1rem;
+    }
+
+    .secondDiv>button,
+    .allProducts>button {
+        margin-left: 1rem;
+        border: none;
+        outline: none;
+        padding: 0.7rem;
+        border-radius: 15px;
+        border: 2px solid rgba(128, 128, 128, 0.299);
+    }
+
+    @media screen and (max-width:1000px) {
+        .secondDiv {
+            width: 30%;
+        }
+    }
+
+    @media screen and (max-width:600px) {
+        .perElement {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+
+    @media screen and (max-width:500px) {
+        .middle {
+            flex-direction: column-reverse;
+        }
+
+        #middle-left {
+            width: 90%;
+            margin-bottom: 2rem;
+        }
+
+        #middle-right {
+            width: 90%;
+            margin-bottom: 2rem;
+        }
+    }
+</style>
+
+<div class="allProducts">
+    <div id="card"></div>
+    <button id="more">Load more products</button>
+</div>
+
+<script>
+    const loadMoreBtn = document.getElementById("more");
+    loadMoreBtn.addEventListener("click", () => { getProducts() });
+
+    async function getProducts() {
+        fetch("http://localhost:8000/getProducts")
+            .then(response => {
+                if (response.status !== 200)
+                    throw new Error("Something went wrong")
+                return response.json()
+            }).
+            then(products => {
+                const { data} = products;
+                const card = document.getElementById("card")
+                card.textContent = "";
+                data.forEach(element => {
+                    const newcardelement = document.createElement("div");
+                    newcardelement.classList.add("perElement");
+                    const pTag = document.createElement("p");
+                    const button = document.createElement("button");
+                    button.innerText = "View Details"
+                    const mainDiv = document.createElement("div");
+                    mainDiv.classList.add("mainDiv")
+                    const firstDiv = document.createElement("div");
+                    const secondDiv = document.createElement("div");
+                    const image = document.createElement("img")
+                    image.src = element.image;
+                    firstDiv.classList.add('firstDiv')
+                    secondDiv.classList.add('secondDiv');
+                    pTag.innerText = element.title
+                    firstDiv.appendChild(image);
+                    secondDiv.appendChild(pTag);
+
+                    // Add description Div
+                    button.addEventListener('click', () => {
+                        newcardelement.textContent = "";
+                        const descDiv = document.createElement("div");
+                        descDiv.innerText = element.description;
+                        descDiv.style.margin = "1rem 0"
+                        descDiv.style.fontSize = "1rem"
+                        descDiv.style.color = "grey"
+                        newcardelement.appendChild(mainDiv);
+                        newcardelement.appendChild(descDiv)
+                    })
+
+                    secondDiv.appendChild(button);
+                    mainDiv.appendChild(firstDiv);
+                    mainDiv.appendChild(secondDiv);
+                    newcardelement.appendChild(mainDiv);
+                    card.appendChild(newcardelement);
+                });
+
+                card.style.display = "flex";
+                card.style.width = "80%";
+                card.style.alignItems = "center";
+                card.style.justifyContent = "center";
+                card.style.flexDirection = "column"
+            }).catch(err)
+        {
+            alert(err)
+        }
+    }
+    getProducts();
+
+</script>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500&display=swap" rel="stylesheet">
+    <title>Login Form</title>
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #f1f1f1;
+            display: flex;
+            width: 100vw;
+            height: 100vh;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .login-container a{
+            text-decoration: none;
+            color: black;
+        }
+
+        .login-form input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .login-form button {
+            width: 100%;
+            padding: 10px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .login-form button:hover {
+            background-color: #333;
+        }
+
+        @media screen and (max-width: 500px) {
+            .login-container {
+                max-width: 90%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-container">
+        <h2><a href="/register">Login</a></h2>
+        <form class="login-form" method="post" action="/login" id="form">
+            <input type="email" placeholder="Email" name="Username" id="Username" required>
+            <input type="password" placeholder="Password" name="Password" id="Password" required>
+            <button type="submit">Login</button>
+        </form>
+    </div>
+
+    <script>
+
+        const form = document.getElementById("form")
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const name = document.getElementById("Username");
+            const password = document.getElementById("Password");
+
+            if (name.value.length == 0)
+                alert("Enter your Email");
+            else if (password.value.length < 7)
+                alert("Password mus contain 8 characters")
+
+            const data = {
+                email: name.value,
+                password: password.value
+            }
+            const response = await fetch("http://localhost:8000/login", {
+                method: "POST",
+                mode: "cors",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            });
+
+            if(response.redirected)
+            {
+                window.location.replace(response.url);
+            }
+
+            if(response.status != 200)
+            {
+                const resp = await response.json();
+                console.log(resp.msg)
+                alert(resp.msg)
+            }
+        })
+
+    </script>
+</body>
+
+</html>

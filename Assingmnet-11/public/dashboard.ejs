@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+            z-index: 10000;
+        }
+
+        .header {
+            background-color: #333;
+            color: #fff;
+            flex: 1;
+        }
+
+        .header h1 {
+            margin: 0;
+        }
+
+        .sidebar {
+            background-color: #555;
+            color: #fff;
+            flex: 0 0 200px;
+            padding: 1rem;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar li {
+            margin-bottom: 1rem;
+            width: min-content;
+            cursor: pointer;
+        }
+
+        .sidebar a {
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 1rem;
+        }
+
+        .section {
+            border: 1px solid #ccc;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        li:hover{
+            border-bottom: 1px solid #ccc;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="dashboard">
+        <%- include("header",{username:username}) %>
+        <%- include("productPage") %>
+    </div>
+</body>
+
+</html>

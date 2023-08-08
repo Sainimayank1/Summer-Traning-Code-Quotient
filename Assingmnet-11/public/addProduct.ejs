@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500&display=swap" rel="stylesheet">
+    <title>Add Product</title>
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+    
+        nav {
+            padding: .5rem 2rem;
+            font-size: 1.5rem;
+            background: #dadada;
+        }
+    
+        .middle {
+            display: flex;
+            min-height: 90vh;
+            padding-top: 2rem;
+        }
+    
+        #middle-left {
+            width: 60%;
+            padding: 0rem 2rem;
+        }
+    
+        #middle-right {
+            width: 40%;
+            padding: 0rem 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    
+        #fileInput {
+            margin-top: 0.5rem;
+        }
+    
+        #middle-right #input {
+            width: 80%;
+            padding: 1rem;
+            font-size: 2rem;
+        }
+    
+        #middle-right button {
+            width: 80%;
+            border: none;
+            padding: 0.6rem;
+            background: #dadada;
+            margin-top: 1rem;
+            border-radius: 10px;
+        }
+    
+    
+        .perElement {
+            margin: 10px 3px;
+            display: flex;
+            justify-content: space-between;
+            padding: 3px 10px;
+            box-shadow: 1px 2px 7px grey;
+            align-items: center;
+        }
+    
+        .secondDiv {
+            width: 15%;
+            display: flex;
+            align-items: center;
+            height: 100%;
+            justify-content: space-between;
+        }
+    
+        @media screen and (max-width:1000px) {
+            .secondDiv {
+                width: 30%;
+            }
+        }
+    
+        @media screen and (max-width:600px) {
+            .perElement {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    
+        @media screen and (max-width:500px) {
+            .middle {
+                flex-direction: column-reverse;
+            }
+    
+            #middle-left {
+                width: 90%;
+                margin-bottom: 2rem;
+            }
+    
+            #middle-right {
+                width: 90%;
+                margin-bottom: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body> 
+    <div class="middle">
+        <form action="/addProduct" method="POST" enctype="multipart/form-data" id="middle-right">
+            <input required type="text" placeholder="Enter Title" id="input" name="title"></input>
+            <input required type="text" placeholder="Enter Description" id="input" name="description"></input>
+            <input required type="text" placeholder="Enter Price" id="input" name="price"></input>
+            <input type="file" id="fileInput" name="pic"></input>
+            <button id="btn">Submit</button>
+        </form>
+    </div>
+    
+</body>
+
+</html>
