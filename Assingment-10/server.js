@@ -31,6 +31,7 @@ app.use((req, res, next) => {
 })
 
 db();
+var page = 0;
 
 
 app.get("/addProduct",async(req,res)=>
@@ -54,15 +55,15 @@ app.post("/addProduct",async(req,res)=>
     }
 })
 
-app.post("/getProducts", async (req, res) => {
-    console.log(req.body)
-    let page = req.body.number;
+app.get("/getProducts", async (req, res) => {
+    console.log(page)
     let perPage = 5;
     let skip = (page * perPage);
     try {
         const data = await Product.find().skip(skip)
         .limit(perPage)
         .sort({updateAt:-1});
+        page++;
         return res.status(200).json({data})
 
     } catch (error) {
@@ -73,6 +74,7 @@ app.post("/getProducts", async (req, res) => {
 
 
 app.get("/dashboard", async (req, res) => {
+    page = 0;
     if (req.session.isLoggedIn) {
         try {
                 res.render("dashboard", { username: req.session.username})
@@ -144,52 +146,6 @@ app.get("/logout", (req, res) => {
             if (!err)
                 res.redirect("/login")
         })
-    }
-})
-
-
-
-app.get("/todos", async (req, res) => {
-    const { useremail } = req.query;
-
-    try {
-        const newdata = await Todo.find({ useremail })
-        if (newdata)
-            res.status(200).json({ data: newdata });
-    } catch (error) {
-        console.log(error)
-        res.status(400).json(error)
-    }
-})
-
-app.delete("/", async (req, res) => {
-    const { _id } = req.body;
-    try {
-        const isDeleted = await Todo.deleteOne({ _id });
-        if (!isDeleted)
-            res.status(400).json({ msg: "Something went wrong" });
-        else
-            res.status(200).json({
-                msg: "Succesfully Delete"
-            })
-    } catch (error) {
-        res.status(400).json({ msg: "Something went wrong" })
-    }
-})
-
-app.post("/markTodo", async (req, res) => {
-    const { _id, isDone } = req.body;
-    console.log(isDone)
-    try {
-        const isUpdated = await Todo.findOneAndUpdate({ _id }, { isDone: !isDone })
-        if (!isUpdated)
-            res.status(400).json({ msg: "Something went wrong" });
-        else
-            res.status(200).json({
-                msg: "Succesfully Update"
-            })
-    } catch (error) {
-        res.status(400).json({ msg: "Something went wrong" })
     }
 })
 

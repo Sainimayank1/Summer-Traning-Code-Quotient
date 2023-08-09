@@ -102,29 +102,17 @@
 </div>
 
 <script>
-
-    var val = 0;
     const loadMoreBtn = document.getElementById("more");
-    loadMoreBtn.addEventListener("click", () => { getProducts(val) });
+    loadMoreBtn.addEventListener("click", () => { getProducts() });
 
-    async function getProducts(val) {
-        const data = { number: val };
-        fetch("http://localhost:8000/getProducts", {
-            method: "POST",
-            mode: "cors",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data),
-        })
+    async function getProducts() {
+        fetch("http://localhost:8000/getProducts")
             .then(response => {
                 if (response.status !== 200)
                     throw new Error("Something went wrong")
                 return response.json()
             }).
             then(products => {
-                val = val+1
-                alert(val)
                 const { data} = products;
                 const card = document.getElementById("card")
                 card.textContent = "";
@@ -175,6 +163,6 @@
             alert(err)
         }
     }
-    getProducts(val);
+    getProducts();
 
 </script>
