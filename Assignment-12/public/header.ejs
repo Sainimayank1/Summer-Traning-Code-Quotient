@@ -1,0 +1,73 @@
+<style>
+    header{
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 1rem;
+    }
+
+    .sidebar {
+        background-color: #555;
+        color: #fff;
+        flex: 0 0 200px;
+        /* padding: 1rem; */
+    }
+
+    .sidebar ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    ul>:nth-child(2)
+    {
+        background: #007BFF;
+        padding: 0.5rem;
+    }
+
+    .sidebar li {
+        margin-bottom: 1rem;
+        font-size: 0.8rem;
+        width: max-content;
+        cursor: pointer;
+    }
+
+    .sidebar a {
+        color: #fff;
+        text-decoration: none;
+    }
+</style>
+
+
+<header class="header">
+    <h1>Dashboard</h1>
+    <nav class="sidebar">
+        <ul>
+            <li>Hello, <%= username %></li>
+            <li id="cart">Go to Cart</li>
+            <li id="li">Logout</li>
+        </ul>
+    </nav>
+</header>
+
+<script>
+    const li = document.getElementById("li");
+    const cart = document.getElementById("cart");
+
+    cart.addEventListener("click",async()=>
+    {
+            window.location.replace("http://localhost:8000/cart");
+    })
+
+    li.addEventListener("click",async()=>
+    {
+        const response = await fetch("http://localhost:8000/logout", {
+            method: "GET"
+        });
+
+        if(response.redirected)
+        {
+                window.location.replace(response.url);
+        }
+    })
+</script>
