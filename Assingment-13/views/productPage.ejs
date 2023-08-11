@@ -1,0 +1,254 @@
+<style>
+    body {
+        font-family: 'Quicksand', sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+
+    nav {
+        padding: .5rem 2rem;
+        font-size: 1.5rem;
+        background: #dadada;
+    }
+
+    .allProducts {
+        width: 100vw;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        margin-top: 2rem;
+        /* border: 2px solid red; */
+        margin-bottom: 2rem;
+    }
+
+    .card{
+        /* border: 2px solid red; */
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        flex-direction: row;
+    }
+
+    .perElement {
+        width: 30%;
+        /* border: 2px solid red; */
+        min-height: 20rem;
+        margin: 10px 3px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        padding: 3px 10px;
+        box-shadow: 1px 2px 7px grey;
+    }
+
+    .mainDiv {
+        /* border: 2px solid red; */
+        width: 100%;
+        display: flex;
+        padding: 1rem;
+        flex-direction: column;
+    }
+
+    .firstDiv {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .firstDiv>img {
+        width: 40%;
+        object-fit: cover;
+    }
+
+    .secondDiv {
+        width: 100%;
+        display: flex;
+        align-items: flex-start;
+        height: 100%;
+        flex-direction: column;
+    }
+
+    .secondDiv>p {
+        font-weight: 600;
+        font-weight: 1rem;
+    }
+
+    .btnDiv{
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 1rem;
+    }
+
+    .btnDiv>button{
+        width: 50%;
+        border: none;
+        outline: none;
+        padding: 0.6rem;
+        cursor: pointer;
+    }
+
+    .btnDiv>:nth-child(1)
+    {
+        background: #333;
+        color: white;
+    }
+
+    .allProducts>button {
+        margin-top: 1rem;
+        border: none;
+        outline: none;
+        padding: 0.7rem;
+        border-radius: 15px;
+        cursor: pointer;
+    }
+
+    @media screen and (max-width:1000px) {
+    
+    }
+
+    @media screen and (max-width:600px) {
+        .perElement {
+           width: 50% !important;
+        }
+    }
+
+    @media screen and (max-width:500px) {
+        .perElement {
+           width: 80% !important;
+        }
+    }
+</style>
+
+<div class="allProducts">
+    <div id="card" class="card"></div>
+    <button id="more">Load more products</button>
+</div>
+
+<script>
+    const loadMoreBtn = document.getElementById("more");
+    loadMoreBtn.addEventListener("click", () => { getProducts() });
+
+    async function addToCart(element)
+    {
+        if(localStorage.getItem("cart"))
+        {
+            let data = JSON.parse(localStorage.getItem("cart"));
+            var isFind = false;
+            let newData = data.map((item)=>
+            {
+                if(item.item._id === element._id)
+                {
+                    if(item.quantity+1 <= element.quantity)
+                        item.quantity = item.quantity+1;
+                    isFind = true;
+                }
+                return item;
+            })
+
+            if(!isFind)
+            {
+                if(element.quantity > 0)
+                {
+                    const isNotFindedData = {item:element,quantity:1};
+                    newData.push(isNotFindedData);
+                }
+            }
+
+            localStorage.setItem("cart",JSON.stringify(newData));
+        }
+        else
+        {
+            let data = [];
+            data.push({item:element,quantity:1});
+            localStorage.setItem("cart",JSON.stringify(data));
+        }
+    }
+
+    async function getProducts() {
+        let page = 0;
+        if(localStorage.getItem("page")>=0)
+        {
+            page = JSON.parse(localStorage.getItem("page"));
+            localStorage.setItem("page",(page+1));
+        }
+        else if(localStorage.getItem("page") == null)
+            localStorage.setItem("page",JSON.stringify(1));
+        fetch(`http://localhost:8000/getProducts/${page}`)
+            .then(response => {
+                if (response.status !== 200)
+                    throw new Error("Something went wrong")
+                return response.json()
+            }).
+            then(products => {
+                const { data} = products;
+                const card = document.getElementById("card")
+                card.textContent = "";
+                data.forEach(element => {
+                    const newcardelement = document.createElement("div");
+                    newcardelement.classList.add("perElement");
+
+                    //      Creating elements
+                    const pTag = document.createElement("p");
+                    const sTag = document.createElement("span");
+                    const button = document.createElement("button");
+                    const cartBtn = document.createElement("button")
+                    const btnDiv = document.createElement("div")
+                    const mainDiv = document.createElement("div");
+                    const firstDiv = document.createElement("div");
+                    const secondDiv = document.createElement("div");
+                    const image = document.createElement("img")
+
+                    //  Giving properties
+                    mainDiv.classList.add("mainDiv")
+                    firstDiv.classList.add('firstDiv')
+                    secondDiv.classList.add('secondDiv');
+                    btnDiv.classList.add("btnDiv")
+                    image.src = element.image;
+                    pTag.innerText = element.title
+                    sTag.innerText = "Price: "+element.price
+                    button.innerText = "View Desc"
+                    cartBtn.innerText = "Add to Cart"
+
+                    //  Appending childs
+                    firstDiv.appendChild(image);
+                    secondDiv.appendChild(pTag);
+                    secondDiv.appendChild(sTag);
+                    btnDiv.appendChild(button);
+                    btnDiv.appendChild(cartBtn);
+                    secondDiv.appendChild(btnDiv);
+
+                    // Add description Div
+                    button.addEventListener('click', () => {
+                        newcardelement.textContent = "";
+                        const descDiv = document.createElement("div");
+                        descDiv.innerText = element.description;
+                        descDiv.style.margin = "1rem 0"
+                        descDiv.style.fontSize = "1rem"
+                        descDiv.style.color = "grey"
+                        newcardelement.appendChild(mainDiv);
+                        newcardelement.appendChild(descDiv)
+                    })
+
+                    cartBtn.addEventListener("click",()=>{addToCart(element)})
+
+                    mainDiv.appendChild(firstDiv);
+                    mainDiv.appendChild(secondDiv);
+                    newcardelement.appendChild(mainDiv);
+                    card.appendChild(newcardelement);
+                });
+
+            }).catch(err)
+        {
+            alert(err)
+        }
+    }
+    getProducts();
+
+</script>

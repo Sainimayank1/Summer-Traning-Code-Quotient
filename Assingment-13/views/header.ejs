@@ -1,0 +1,120 @@
+<style>
+    header {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: space-around;
+        /* padding: 0 1rem 0 1rem !important; */
+        border-bottom: 8px solid #a1a1a184;
+    }
+
+    header h1 {
+        padding: 0;
+        margin: 0;
+        font-size: 2rem;
+    }
+
+
+    .sidebar ul {
+        list-style: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: row;
+    }
+
+
+
+    .sidebar li {
+        font-size: 0.9rem;
+        margin: 0 0.4rem;
+        padding: 0.4rem;
+        border: 2px solid #a1a1a184;
+        border-radius: 10px;
+        width: max-content;
+        cursor: pointer;
+    }
+
+    ul>:nth-child(1) {
+        border: none;
+        cursor:auto;
+    }
+
+    a {
+        color: #333;
+        text-decoration: none;
+    }
+
+    @media screen and (max-width:700px) {
+        header {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        h1 {
+            margin-top: 1rem !important;
+        }
+/* 
+        .sidebar {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+        } */
+
+    }
+    @media screen and (max-width:480px) {
+
+        .sidebar ul {
+            flex-direction: column !important;
+            /* width: 100%; */
+        }
+        ul li{
+            margin: 0.5rem 0 !important;
+        }
+
+    }
+</style>
+
+
+<header class="header">
+    <h1><a href="/dashboard">YoYoShop</a></h1>
+    <h1 class="sidebar">
+        <ul>
+            <li>Hello, <%= username %>
+            </li>
+            <li id="cart">Go to Cart</li>
+            <% if (isAdmin) { %>
+                <li id="admin">Admin Panel</li>
+                <% } %>
+                    <li id="li">Logout</li>
+        </ul>
+    </h1>
+</header>
+
+
+
+<script>
+    const li = document.getElementById("li");
+    const cart = document.getElementById("cart");
+    const admin = document.getElementById("admin");
+
+    admin.addEventListener("click", () => {
+        window.location.replace("http://localhost:8000/admin");
+    })
+
+    cart.addEventListener("click", async () => {
+        window.location.replace("http://localhost:8000/cart");
+    })
+
+    li.addEventListener("click", async () => {
+        const response = await fetch("http://localhost:8000/logout", {
+            method: "GET"
+        });
+
+        if (response.redirected) {
+            window.location.replace(response.url);
+        }
+    })
+</script>

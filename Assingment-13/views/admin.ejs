@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500&display=swap" rel="stylesheet">
+    <title>Add Product</title>
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .middle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding-top: 2rem;
+        }
+
+        #middle-form {
+            width: 50%;
+            padding: 0rem 2rem;
+            border: 1px solid #333;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #middle-form>input {
+            padding: 0.6rem 0.6rem;
+            width: 90%;
+            margin-bottom: 1.5rem;
+        }
+
+
+        #middle-form button {
+            width: 30%;
+            border: none;
+            padding: 0.6rem;
+            color: white;
+            background: #007BFF;
+            border-radius: 10px;
+        }
+
+
+        .allProducts {
+            width: 100vw;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            flex-direction: row;
+        }
+
+        .perElement {
+            width: 30%;
+            min-height: 20rem;
+            margin: 10px 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 3px 10px;
+            box-shadow: 1px 2px 7px grey;
+        }
+
+        .mainDiv {
+            display: flex;
+            padding: 1rem;
+            flex-direction: column;
+        }
+
+        .firstDiv {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .firstDiv>img {
+            width: 40%;
+            object-fit: cover;
+        }
+
+        .secondDiv {
+            width: 100%;
+            display: flex;
+            margin-top: 1rem;
+            align-items: flex-start;
+            height: 100%;
+            flex-direction: column;
+        }
+
+        .secondDiv>p {
+            font-weight: 600;
+            font-weight: 1rem;
+        }
+
+        .btnDiv {
+            width: 100% !important;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 1rem;
+        }
+
+        .btnDiv>button {
+            width: 50%;
+            border: none;
+            outline: none;
+            padding: 0.6rem;
+            cursor: pointer;
+        }
+
+        .btnDiv>:nth-child(1) {
+            background: #333;
+            color: white;
+        }
+
+        .allProducts>button {
+            margin-top: 1rem;
+            border: none;
+            outline: none;
+            padding: 0.7rem;
+            border-radius: 15px;
+            cursor: pointer;
+        }
+
+        .card input {
+            width: 100%;
+            padding: 0.5rem;
+            margin: .3rem 0;
+        }
+
+
+        @media screen and (max-width:600px) {
+    
+            .perElement {
+                flex-direction: column;
+                align-items: flex-start;
+                width: 50% !important;
+            }
+            #middle-form
+            {
+                width: 50% !important;
+            }
+        }
+
+        @media screen and (max-width:500px) {
+            .middle {
+                width: 100% !important;
+            }
+
+            #middle-form
+            {
+                width: 80% !important;
+            }
+
+            #middle-left {
+                width: 90%;
+                margin-bottom: 2rem;
+            }
+
+            #middle-right {
+                width: 90%;
+                margin-bottom: 2rem;
+            }
+            .perElement {
+                width: 80% !important;
+            }
+        }
+       
+    </style>
+</head>
+
+<body>
+    <%- include("header",{username:username , isAdmin:isAdmin}) %>
+        <div class="middle">
+            <form action="/addProduct" method="POST" enctype="multipart/form-data" id="middle-form">
+                <label for="title">Product Name </label>
+                <input required type="text" placeholder="Product Name" id="title" name="title"></input>
+                <label for="description">Product Description </label>
+                <input required type="text" placeholder="Product Description" id="description"
+                    name="description"></input>
+                <label for="price">Product Price</label>
+                <input required type="text" placeholder="Product Price" id="price" name="price"></input>
+                <label for="quantity">Product Quantity</label>
+                <input required type="text" placeholder="Product Quantity" id="quantity" name="quantity"></input>
+                <label for="fileInput">Product Image</label>
+                <input type="file" id="fileInput" name="pic" accept="image/png, image/jpeg , image/jpg"></input>
+                <button id="btn">Add Product</button>
+            </form>
+        </div>
+        <div class="allProducts">
+            <div id="card" class="card"></div>
+        </div>
+
+        <script>
+            async function getProducts() {
+                fetch("http://localhost:8000/adminGetProducts")
+                    .then(response => {
+                        if (response.status !== 200)
+                            throw new Error("Something went wrong")
+                        return response.json()
+                    }).
+                    then(products => {
+                        const { data } = products;
+                        const card = document.getElementById("card")
+                        card.textContent = "";
+                        data.forEach(element => {
+                            const newcardelement = document.createElement("div");
+                            newcardelement.classList.add("perElement");
+
+                            //      Creating elements
+                            const name = document.createElement("input");
+                            const description = document.createElement("input");
+                            const price = document.createElement("input");
+                            const quantity = document.createElement("input");
+                            const updateBtn = document.createElement("button");
+                            const deleteBtn = document.createElement("button");
+                            const btnDiv = document.createElement("div")
+                            const mainDiv = document.createElement("div");
+                            const firstDiv = document.createElement("div");
+                            const secondDiv = document.createElement("div");
+                            const image = document.createElement("img")
+
+                            //  Giving properties
+                            mainDiv.classList.add("mainDiv")
+                            firstDiv.classList.add('firstDiv')
+                            secondDiv.classList.add('secondDiv');
+                            btnDiv.classList.add("btnDiv")
+                            image.src = element.image;
+                            name.value = element.title;
+                            description.value = element.description;
+                            price.value = element.price;
+                            quantity.value = element.quantity;
+                            updateBtn.innerText = "Update";
+                            deleteBtn.innerText = "Delete"
+
+                            //  Buttons eventListner
+                            deleteBtn.addEventListener("click", () => { deleteElement(element) })
+                            updateBtn.addEventListener("click", () => { updateElement(element, { title: name.value, description: description.value, quantity: quantity.value, price: price.value }) })
+
+                            //  Appending childs
+                            firstDiv.appendChild(image);
+                            secondDiv.appendChild(name);
+                            secondDiv.appendChild(description);
+                            secondDiv.appendChild(price);
+                            secondDiv.appendChild(quantity);
+                            btnDiv.appendChild(updateBtn);
+                            btnDiv.appendChild(deleteBtn);
+                            secondDiv.appendChild(btnDiv);
+
+
+                            mainDiv.appendChild(firstDiv);
+                            mainDiv.appendChild(secondDiv);
+                            newcardelement.appendChild(mainDiv);
+                            card.appendChild(newcardelement);
+                        });
+
+                    }).catch(err)
+                {
+                    alert(err)
+                }
+            }
+
+            async function deleteElement(element) {
+                let response = await fetch("http://localhost:8000/deleteProduct", {
+                    method: "POST",
+                    mode: "cors",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(element),
+                }).then();
+
+                response = await response.json();
+                alert(response.msg)
+                getProducts();
+                // getProducts();
+            }
+
+            async function updateElement(oldElement, newElement) {
+                const data = { oldElement, newElement }
+                let response = await fetch("http://localhost:8000/updateProduct", {
+                    method: "POST",
+                    mode: "cors",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(data),
+                });
+
+                response = await response.json();
+                alert(response.msg)
+                getProducts();
+            }
+
+            getProducts();
+
+        </script>
+
+</body>
+
+</html>
